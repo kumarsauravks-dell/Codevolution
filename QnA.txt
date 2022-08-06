@@ -1,0 +1,995 @@
+Q1. There is "Welcome Visitor" text with a Subscribe button below, with the help of state change it to "Thanks for Subscribe." on button click.
+Ans 1. 
+    - class Message extends React.Component{
+        constructor(){
+            super()
+            this.state={
+                message:"Welcome Visitor" 
+            }
+        }
+        onSubscribe(){
+            this.setState({
+                message:"Thanks for Subscribe."
+            })
+        }
+        
+        render(){
+            return(
+                <div>
+                    <h1>{this.state.message}</h1>
+                    <button onClick={()=>this.onSubscribe()}>Subscribe</button>
+                </div>
+            )
+        }
+    }
+
+Q2. Create a program where parent component method is called from child component and data passed from child component will be reflected to parent component.
+Ans 2.
+    - ParentComponent.js
+    import React from "react"
+    import ChildComponent from "./ChildComponent";
+
+    class ParentComponent extends React.Component{
+        constructor(){
+            super()
+            this.state=({
+                message:"Parent"
+            })
+            this.greetHandler=this.greetHandler.bind(this);
+        }
+        greetHandler(msg){
+            alert(`Message from ${this.state.message} by ${msg}`)
+        }
+        render(){        
+            return(
+                <div>
+                    <ChildComponent greetHandler={this.greetHandler} />
+                </div>
+            )
+        }
+    }
+    export default ParentComponent;
+    
+    - ChildComponent.js
+    function ChildComponent(props){
+        return(
+            <>
+            <button onClick={()=>props.greetHandler('child')}>Click Me</button>
+            </>
+        )
+    }
+    export default ChildComponent
+
+Q3. Create a Form having username,comments,topic for textbox,textarea,select respectively. Show an alert when we click on submit button and display all the values supplied.
+Ans 3.
+    export class Form extends Component {
+        constructor(props) {
+        super(props)
+        
+        this.state = {
+            username:"",
+            comments:"",
+            topic:"React"
+        }
+        }
+        handleInputChange=(event)=>{
+            this.setState({
+                username:event.target.value
+            })
+        }
+        handleCommentChane=event=>{
+            this.setState({
+                comments:event.target.value
+            })
+        }
+        handleTopicChange=event=>{
+            this.setState({
+                topic:event.target.value
+            })
+        }
+        handleSubmit=(event)=>{
+            alert(`${this.state.username} ${this.state.comments} ${this.state.topic}`)
+            event.preventDefault();
+        }
+    render() {
+        const {username,comments,topic}=this.state;
+        return (
+        <form onSubmit={this.handleSubmit}>
+            <label>Enter UserName</label>
+            <input type="text" value={username} onChange={this.handleInputChange}></input>
+            <label>Enter Comments</label>
+            <textarea value={comments} onChange={this.handleCommentChane}></textarea>
+            <select value={topic} onChange={this.handleTopicChange}>
+                <option>Angular</option>
+                <option>Vue</option>
+                <option>React</option>              
+            </select>
+            <input type="submit"></input>
+        </form>
+        )
+    }
+    }
+
+Q4. Create 2 component LifecycleA and LifecycleB . console log different mounting lifecycle method like constructor, getDerivedStateFromProps, render and componentDidMount in both the components to see the order of execution of these methods.
+Ans 4.
+    import React, { Component } from 'react'
+    import LifecycleB from './LifecycleB';
+
+    class LifecycleA extends Component {
+        constructor(props){
+            super()
+            console.log("LifecycleA Contructor")
+            this.state={
+                name:"Saurav"
+            }
+        }
+
+        static getDerivedStateFromProps(props,state){
+            console.log("LifecycleA getDerivedStateFromProps");
+            return null;
+        }
+        componentDidMount(){
+            console.log("LifecycleA ComponentDidMount");
+        }
+    render() {
+        console.log("LifecycleA render")
+        return (
+        <div>
+            Lifecycle A
+            <LifecycleB />
+        </div>
+        )
+    }
+    }
+
+    export default LifecycleA
+
+Q5. In the 2 components LifecycleA and LifecycleB, console log the different updating lifecycle methods like getDerivedStateFromProps, shouldComponentUpdate,render,getSnapshotBeforeUpdate, componentDidUpdate to see the order of execution.
+Ans 5. 
+    import React, { Component } from 'react'
+    import LifecycleB from './LifecycleB';
+
+    class LifecycleA extends Component {
+        constructor(props){
+            super()
+            console.log("LifecycleA Contructor")
+            this.state={
+                name:"Saurav"
+            }
+        }
+
+        static getDerivedStateFromProps(props,state){
+            console.log("LifecycleA getDerivedStateFromProps");
+            return null;
+        }
+        componentDidMount(){
+            console.log("LifecycleA ComponentDidMount");
+        }
+
+        shouldComponentUpdate(){
+        console.log("LifecycleA shouldComponentUpdate");
+        return true;
+        }
+
+        getSnapshotBeforeUpdate(prevProp,prevState){
+        console.log("LifecycleA getSnapshotBeforeUpdate");
+        return null;
+        }
+
+        componentDidUpdate(){
+        console.log("LifecycleA componentDidUpdate")
+        }
+
+        changeState=()=>{
+        this.setState({
+            name:"Kumar"
+        })
+        }
+    render() {
+        console.log("LifecycleA render")
+        return (
+        <div>
+            Lifecycle A
+            <button onClick={this.changeState}>Change State</button>
+            <LifecycleB />
+        </div>
+        )
+    }
+    }
+
+    export default LifecycleA
+
+Q6. Create three components PureComp,RegComp and ParentComp . Inherit PureComp with PureComponent and other two with Component,
+    In ParentComp take a state -> name and initialise it with "Viswas". Now in ComponentDidMount set its state again to "Viswas".
+    Pass the name as prop to both the other two component , Also console log the render of each component in the render method.
+    This program shows the shallow comarison of pure vs regular component.
+Ans 6.
+    import React,{Component} from "react";
+    import PureComp from "./PureComp";
+    import RegComp from "./RegComp";
+
+    class ParentComp extends Component{
+        constructor(props) {
+            super(props)
+            
+            this.state = {
+                name: 'Viswas'
+            }
+        }
+        componentDidMount(){
+            setInterval(()=>{
+                this.setState({
+                    name:"Viswas"
+                })
+            },2000)
+        }
+        render(){   
+            console.log("*************Parent Component Render*****************")     
+            return(
+                <>
+                    <h1>Parent Component</h1>
+                    <RegComp name={this.state.name} />
+                    <PureComp name={this.state.name} />
+                </>
+            )
+        }
+    }
+
+    export default ParentComp;
+
+Q7. By using refs focus on a textbox when page loads.
+Ans.
+    import React, { Component } from 'react'
+    export class RefsDemo extends Component {
+        constructor(props) {
+        super(props)        
+        this.inputRef = React.createRef(); 
+        }
+        componentDidMount(){
+            this.inputRef.current.focus()
+        }
+        render() {
+        return (
+        <div>
+            <input type="text" ref={this.inputRef} ></input>
+        </div>
+        )
+    }
+    }
+    export default RefsDemo
+
+Q8. By using refs on click of a button alert the text entered in a textbox.
+Ans.
+    import React, { Component } from 'react'
+    export class RefsDemo extends Component {
+        constructor(props) {
+        super(props)
+        this.inputRef=React.createRef();
+        }
+        clickhandler=()=>{
+            alert(this.inputRef.current.value);
+        }
+        render() {
+        return (
+        <div>
+            <input type="text" ref={this.inputRef} ></input>
+            <button onClick={this.clickhandler}>Click Me</button>
+        </div>
+        )
+    }
+    }
+    export default RefsDemo
+
+Q9. Focus on textbox on page load using Callback ref approach.
+Ans.
+    import React, { Component } from 'react';
+    export class RefsDemo extends Component {
+        constructor(props) {
+        super(props)
+        this.cbRef=null;
+        this.setCbRef=element=>{
+            this.cbRef=element
+        }
+        }
+        componentDidMount(){
+            if(this.cbRef){
+                this.cbRef.focus();
+            }        
+        }
+        render() {
+        return (
+        <div>
+            <input type="text" ref={this.setCbRef} ></input>
+        </div>
+        )
+    }
+    }
+    export default RefsDemo
+
+Q10. Create 2 Components Input,FocusInput. On the button click of focus input create focus on the Input component textbox.
+Ans.
+    Input.js
+        import React, { Component } from 'react'
+        class Input extends Component {
+            constructor(props) {
+            super(props)
+            
+            this.inputRef=React.createRef();
+            }
+            InputFocus=()=>{
+                this.inputRef.current.focus();
+            }
+        render() {    
+            return (
+            <div>
+                <input type="text" ref={this.inputRef} ></input>
+            </div>
+            )
+        }
+        }
+        export default Input
+
+    FocusInput.js
+        import React, { Component } from 'react'
+        import Input from './Input'
+
+        class FocusInput extends Component {
+            constructor(props) {
+            super(props)    
+            this.componentRef=React.createRef();
+            }
+            clickHandler=()=>{
+                this.componentRef.current.InputFocus();
+            }
+        render() {
+            return (
+            <div>
+                <Input ref={this.componentRef} />
+                <button onClick={this.clickHandler} >Focus Input</button>
+            </div>
+            )
+        }
+        }
+        export default FocusInput
+
+Q11. Create two components FRParent,FRInput . Create a function to focus on the input textbox on the button click. By using forward ref pass the ref from parent component to the native input element and add focus to it.
+Ans. 
+    - FRParent.js
+    import React, { Component } from 'react'
+    import FRInput from './FRInput'
+    class FRParent extends Component {
+    constructor(props) {
+        super(props)  
+        this.inputRef=React.createRef();
+    }
+    clickHandler=()=>{
+        this.inputRef.current.focus();
+    }
+        render() {
+        return (
+        <div>
+            <FRInput ref={this.inputRef} />
+            <button onClick={this.clickHandler}>Focus Input</button>
+        </div>
+        )
+    }
+    }
+    export default FRParent
+
+    - FRInput.js
+    import React from 'react'
+    const FRInput = React.forwardRef((prop,ref) =>{
+    return (
+        <div>
+            <input type="text" ref={ref}></input>
+        </div>
+    )
+    })
+    export default FRInput
+
+Q12. Create two components Hero.js, ErrorBoundary.js. Hero component will recieve a prop heroname and print it in the browser.
+    Implement a check in Hero component if the heroName is Joker then it thows an error.
+    In ErrorBoundary component with the two methods getDerivedStateFromError and componentDidCatch just print the error in the browser and console respectively.
+Ans.
+    - Hero.js
+    import React from 'react'
+    function Hero({heroname}) {
+        if(heroname==='Joker'){
+            throw new Error('Not a hero!')
+        }
+    return (
+        <div>
+            {heroname}
+        </div>
+    )
+    }
+    export default Hero
+
+    - ErrorBoundary.js
+    import React, { Component } from 'react'
+    class ErrorBoundary extends Component {
+        constructor(props) {
+        super(props)
+        
+        this.state = {
+            hasError:false
+        }
+        }
+        static getDerivedStateFromError(error){
+            return{
+                hasError:true
+            }
+        }
+        componentDidCatch(error,info){
+            console.log(error)
+            console.log(info)
+        }
+        render() {
+        if(this.state.hasError){
+            return <h1>Something Went Wrong.</h1>
+        }
+        return this.props.children
+    }
+    }
+    export default ErrorBoundary
+    - App.js
+      <ErrorBoundary>
+      <Hero heroname="Batman" />
+      </ErrorBoundary>
+      <ErrorBoundary>
+      <Hero heroname="Superman" />
+      </ErrorBoundary>
+      <ErrorBoundary>
+      <Hero heroname="Joker" />
+      </ErrorBoundary>   
+
+Q13. With the help of Higher Order Component create a UpdatedComponent component which takes component and return the commmon functionality as prop to the passed component. Using this just implement the ClickCounter and HoverCounter accordingly.
+Ans.
+    - withCounter.js
+        import React, { Component } from 'react'
+        const UpdatedComponent=OriginalComponent=>{
+            class NewComponent extends Component{
+                constructor(props) {
+                super(props)                
+                this.state = {
+                    count:0
+                }
+                }
+                incrementCount=()=>{
+                    this.setState(prevState=>{
+                        return {count:prevState.count+1}
+                    })
+                }   
+                render(){
+                    return (
+                        <OriginalComponent  count={this.state.count} incrementCount={this.incrementCount} />
+                    )
+                }
+            }
+            return NewComponent
+        }
+        export default UpdatedComponent
+    - ClickCounter.js
+        import React, { Component } from 'react'
+        import UpdatedComponent from './withCounter'
+
+        class Clickcounter extends Component {
+        render() {  
+            const {count,incrementCount}=this.props  
+            return (
+            <div>
+                <button onClick={incrementCount}>Button Clicked {count} times.</button>
+            </div>
+            )
+        }
+        }
+        export default UpdatedComponent(Clickcounter)
+    - HoverCounter.js
+        import React, { Component } from 'react'
+        import UpdatedComponent from './withCounter'
+
+        class HoverCounter extends Component {
+            render() { 
+                const {count,incrementCount}=this.props   
+            return (
+            <div>
+                <h2 onMouseOver={incrementCount}>
+                Hovered {count} times
+                </h2>
+            </div>
+            )
+        }
+        }
+        export default UpdatedComponent(HoverCounter)
+
+Q14. Create the same program but this time we have dynamic increment number instead of one.Lets say for hover 10 and for click 5.
+Ans.
+    - withCounter.js
+        import React, { Component } from 'react'
+        const withCounter=(WrapperComponent,incrementNumber)=>{
+            class WithCounter extends Component{
+                constructor(props) {
+                super(props)
+                
+                this.state = {
+                    count:0
+                }
+                }
+                incrementCount=()=>{
+                    this.setState(prevState=>{
+                        return {count:prevState.count+incrementNumber}
+                    })
+                }   
+                render(){
+                    return (
+                        <WrapperComponent count={this.state.count} incrementCount={this.incrementCount}
+                        {...this.props} />
+                    )
+                }
+            }
+            return WithCounter
+        }
+        export default withCounter
+
+    - ClickCounter.js
+        import React, { Component } from 'react'
+        import withCounter from './withCounter'
+        class Clickcounter extends Component {
+        render() {  
+            const {count,incrementCount}=this.props  
+            return (
+            <div>
+                <button onClick={incrementCount}>Button Clicked {count} times. {this.props.name}
+                </button>
+            </div>
+            )
+        }
+        }
+        export default withCounter(Clickcounter,10)
+
+    - HoverCounter.js
+        import React, { Component } from 'react'
+        import withCounter from './withCounter'
+
+        class HoverCounter extends Component {
+            render() { 
+                const {count,incrementCount}=this.props   
+            return (
+            <div>
+                <h2 onMouseOver={incrementCount}>
+                Hovered {count} times.
+                </h2>
+            </div>
+            )
+        }
+        }
+        export default withCounter(HoverCounter,5)
+
+    - App.js
+        <Clickcounter name='Saurav' />
+        <HoverCounter />
+
+Q15. Create a program to display a name "Kumar" if isLoggedIn is set to true and "Guest" if isLoggedIn is set to false.
+Ans.
+    - App.js
+
+    - User.js
+        import React, { Component } from 'react'
+        class User extends Component {
+        render() {
+            return (
+            <div>
+                <h5>{this.props.render(false)}</h5>
+            </div>
+            )
+        }
+        }
+        export default User
+
+Q16. Create two components ClickCounterTwo and HoverCounterTwo. Using render prop create a seperate file to write the fuctioning of counter.
+Ans. 
+    - ClickCounterTwo.js
+        import React, { Component } from 'react'
+        class ClickCounterTwo extends Component {
+        render() {
+            const {incrementCount,count}=this.props;
+            return (
+            <div>
+                <button onClick={incrementCount}>Clicked {count} times</button>
+            </div>
+            )
+        }
+        }
+        export default ClickCounterTwo
+    - HoverCounterTwo.js
+        import React, { Component } from 'react'
+        class HoverCounterTwo extends Component {
+        render() {
+            const {incrementCount,count}=this.props
+            return (
+            <div>
+                <h2 onMouseOver={incrementCount}>Hovered {count} times</h2>
+            </div>
+            )
+        }
+        }
+        export default HoverCounterTwo
+    - CounterTwo.js
+        import React, { Component } from 'react'
+        class CounterTwo extends Component {
+            constructor(props) {
+                super(props)
+            
+                this.state = {
+                count:0
+                }
+            }
+            incrementCount=()=>{
+                this.setState(previousState=>{
+                    return {count:previousState.count+1}
+                })
+            }
+        render() {
+            return (
+            <div>
+                {this.props.children(this.incrementCount,this.state.count)}
+                {/* {this.props.render(this.incrementCount,this.state.count)} */}
+            </div>
+            )
+        }
+        }
+        export default CounterTwo
+    - App.js
+        <CounterTwo>
+        {(incrementCount,count)=>(
+        <ClickCounterTwo incrementCount={incrementCount} count={count} />
+        )} 
+        </CounterTwo>
+        {/* <CounterTwo render= {
+            (incrementCount,count)=>(<HoverCounterTwo incrementCount={incrementCount} count={count} />)
+        } /> */}
+
+
+Q17. Using Context -> UserContext , pass a prop username from App Component to Component F without passing it down in different levels of hierarchy.
+Ans. 
+    - userContext.js
+        import React from "react";
+        const UserContext=React.createContext();
+        const UserProvider=UserContext.Provider
+        const UserConsumer=UserContext.Consumer
+        export {UserProvider,UserConsumer}
+    - App.js
+        <UserProvider value="Saurav">
+            <ComponentF />
+        </UserProvider>
+    - ComponentF.js
+        import React, { Component } from 'react'
+        import { UserConsumer } from './userContext'
+        class ComponentF extends Component {
+        render() {
+            return (
+            <UserConsumer>
+                {
+                    username=>{
+                    return <h1>Welcome {username}</h1>
+                    }
+                }
+            </UserConsumer>
+            )
+        }
+        }
+        export default ComponentF
+
+===========================================================
+Q18. Create a fuctional component HookCounter such that when we click on the button the counter value should be increased by 1.
+Ans.
+    - HookCounter.js
+        import React, { useState } from 'react'
+        function HookCounter() {
+            const [count,setCount]= useState(0);
+        return (
+            <div>
+                <button onClick={()=>setCount(count+1)}>Counter : {count}</button>
+            </div>
+        )
+        }
+        export default HookCounter
+
+Q19. Create a component HookCounterTwo in which there is state for counter and there are three buttons  for increment , decrement , and reset the count respectively.
+        Lets add a fourth button which will increment the counter value by 5 but in the form of loop , each time the loop iterates it will 1 to the count.
+        We find that it will not provide the desired output. Correct the problem by implementing previous state.
+Ans.
+    - HookCounterTwo.js
+        import React, { useState } from 'react'
+        function HookCounterTwo() {
+            const initialValue=0;
+            const [count,setCount]=useState(initialValue);
+
+            const incrementFive=()=>{
+                for(let i=0;i<5;i++){
+                    setCount(count+1);
+                }
+            }
+        return (
+            <div>
+                <p>Count : {count}</p><br/>
+                <button onClick={()=> setCount(count+1)}>Increment</button>
+                <button onClick={()=>setCount(count-1)}>Decrement</button>
+                <button onClick={()=>setCount(initialValue)}>Reset</button>
+                <button onClick={incrementFive}>Increment 5</button>
+            </div>
+        )
+        }
+        export default HookCounterTwo
+    - HookCounterTwo.js with solution
+        import React, { useState } from 'react'
+        function HookCounterTwo() {
+            const initialValue=0;
+            const [count,setCount]=useState(initialValue);
+
+            const incrementFive=()=>{
+                for(let i=0;i<5;i++){
+                    setCount((prevState)=>prevState+1);
+                }
+            }
+        return (
+            <div>
+                <p>Count : {count}</p><br/>
+                <button onClick={()=> setCount((prevState)=>prevState+1)}>Increment</button>
+                <button onClick={()=>setCount((prevState)=>prevState-1)}>Decrement</button>
+                <button onClick={()=>setCount(initialValue)}>Reset</button>
+                <button onClick={incrementFive}>Increment 5</button>
+            </div>
+        )
+        }
+        export default HookCounterTwo
+
+Q20. Create a component HookCounterThree to store an object of firstName and lastName and display it in h2 tag using useState.
+Ans.
+    - HookCounterThree
+        import React, { useState } from 'react'
+        function HookCounterThree() {
+            const [name,setName]=useState({firstName:'',lastName:''});
+        return (
+            <div>
+                <input type="text" onChange={e=>setName({...name,firstName:e.target.value})}></input>
+                <input type="text" onChange={e=>setName({...name,lastName:e.target.value})}></input>
+                <h3>First Name - {name.firstName}</h3>
+                <h3>Last Name - {name.lastName}</h3>
+                <h2>{JSON.stringify(name)}</h2>
+            </div>
+        )
+        }
+        export default HookCounterThree
+
+Q21. Create a component HookCounterFour to store an array items. Cteate a button which will add a random numder to the items array and display it in the form of ul and li.
+Ans.
+    - HookCounterFour.js
+        import React, { useState } from 'react'
+        function HookCounterFour() {
+            const [items,setItems]=useState([]);
+            const addItem=()=>{
+                setItems([...items,{
+                    id:items.length,
+                    value:Math.floor(Math.random()*10)+1
+                }])
+            }
+        return (
+            <div>
+                <button onClick={addItem}>Add Item</button>
+                <ul>
+                    {
+                        items.map(item=>(
+                            <li key={item.id}>{item.value}</li>
+                        ))
+                    }
+                </ul>
+            </div>
+        )
+        }
+        export default HookCounterFour
+
+Q22. Create a class component where add a button and on clicking the button the title of the page get updated. Show how by using class component we need to write same piece of code in two lifecycle events.
+Ans.
+    - ClassCounterOne.js
+        import React, { Component } from 'react'
+        class ClassCounterOne extends Component {
+        constructor(props) {
+            super(props)
+        
+            this.state = {
+            count:0
+            }
+        }
+        componentDidMount(){
+            document.title=`Clicked ${this.state.count} times.`
+        }
+        componentDidUpdate(){
+            document.title=`Clicked ${this.state.count} times.`
+        }
+            render() {
+            return (
+            <div>
+                <button onClick={()=>this.setState({count:this.state.count+1})}>
+                    Clicked {this.state.count} times.
+                </button>
+            </div>
+            )
+        }
+        }
+        export default ClassCounterOne
+
+Q23. Create a functional component and create the previous program using this function component to show useEffect executes after every render.
+Ans.
+    - HookCounterOne.js
+        import React, { useEffect, useState } from 'react'
+        function HookCounterOne() {
+            const [count,setcount]=useState(0);
+            useEffect(()=>{
+                document.title=`Clicked ${count} times.`
+            })
+        return (
+            <div>
+                <button onClick={()=>setcount(count+1)}>
+                    Clicked {count} times.
+                </button>
+            </div>
+        )
+        }
+        export default HookCounterOne
+
+Q24. Create a class component in which there is a counter as well as a text box. On onChange event of textbox console log "document updated".
+     Now Conditionally console log the message whenever count value changes to prevent it from unnecesarry renders.
+Ans. 
+    - ClassCounterTwo.js
+        import React, { Component } from 'react'
+        class ClassCounterTwo extends Component {
+            constructor(props) {
+                super(props)            
+                this.state = {
+                count:0,
+                name:''
+                }
+            }
+            componentDidMount(){
+                document.title=`Button Clicked ${this.state.count} times.`
+            }
+            componentDidUpdate(prevProp,prevState){
+                if(prevState.count!=this.state.count){
+                document.title=`Button Clicked ${this.state.count} times.`
+                console.log("Document Updated")
+                }
+            }
+            incrementCount=()=>{
+                this.setState({
+                    count:this.state.count+1
+                })
+            }
+            render() {
+            return (
+            <div>
+                <input onChange={(e)=>this.setState({name:e.target.value})} value={this.state.name} type="text"></input>
+                <button onClick={this.incrementCount}>Count : {this.state.count}</button>
+            </div>
+            )
+        }
+        }
+        export default ClassCounterTwo
+
+Q25. Rewrite the same functionality by using the useEffect hook.
+Ans.
+    - HookCounterTwoo.js
+        import React, { useEffect, useState } from 'react'
+        function HookCounterTwoo() {
+            const [count,setCount]=useState(0);
+            const [name,setName]=useState('');
+
+            useEffect(()=>{
+            console.log('useeffect - Updating document title.')
+            document.title=`You clicked ${count} times.`
+            },[count])
+        return (
+            <div>
+            <input value={name} onChange={e=>setName(e.target.value)} type="text"></input>
+            <button onClick={()=>setCount(count+1)}>Clicked {count} times.</button>        
+            </div>
+        )
+        }
+        export default HookCounterTwoo
+
+Q26. Create two components ClassMouse and HookMouse to dislay the X and Y corrdinate on mousemove.Console log the coordinates and show how to prevent the console log for every render.
+Ans. 
+    - ClassMouse.js
+        import React, { Component } from 'react'
+        class ClassMouse extends Component {
+            constructor(props) {
+            super(props)
+            
+            this.state = {
+                x:0,
+                y:0
+            }
+            }
+
+            logMousePosition=(e)=>{
+                this.setState({x:e.clientX,y:e.clientY})
+            }
+            componentDidMount(){
+                window.addEventListener('mousemove',this.logMousePosition)
+            }
+        render() {
+            return (
+            <div>
+                X : {this.state.x} , Y : {this.state.y}
+            </div>
+            )
+        }
+        }
+        export default ClassMouse
+    - HookMouse.js
+        import React, { useEffect, useState } from 'react'
+        function HookMouse() {
+            const [x,setX]=useState(0);
+            const [y,setY]=useState(0);
+            const logMousePosition=(e)=>{
+                console.log('Mouse Event');
+                setX(e.clientX)
+                setY(e.clientY)
+            }
+            useEffect(()=>{
+                console.log('useEffect called')
+                window.addEventListener('mousemove',logMousePosition)
+                },[]) // if we dont specify this empty array usseffect console log print again and again with mousemove and we want to execute it only on initial render.
+        return (
+            <div>
+                X : {x} , Y :{y}
+            </div>
+        )
+        }
+        export default HookMouse
+
+Q27. Create a component HookMouse and display and console log x and y coordinates on mousemove event. Now create other component MouseContainer having a toggle button to toggle the component HookMouse , also  add cleanup code when component is unmounted with a console log.
+Ans.
+    - HookMouse.js
+        import React, { useEffect, useState } from 'react'
+        function HookMouse() {
+            const [x,setX]=useState(0);
+            const [y,setY]=useState(0);
+            const logMousePosition=(e)=>{
+                console.log('Mouse Event');
+                setX(e.clientX)
+                setY(e.clientY)
+            }
+            useEffect(()=>{
+                console.log('useEffect called')
+                window.addEventListener('mousemove',logMousePosition)
+                
+                return()=>{
+                    console.log('Component Unmount code.');
+                    window.removeEventListener('mousemove',logMousePosition)
+                }  
+            
+            },[])
+        return (
+            <div>
+                X : {x} , Y :{y}
+            </div>
+        )
+        }
+        export default HookMouse
+    - MouseContainer.js
+        import React, { useState } from 'react'
+        import HookMouse from './HookMouse';
+        function MouseContainer() {
+            const [display,setDisplay]=useState(true);
+        return (
+            <div>
+                <button onClick={()=>setDisplay(!display)}>Toggle Display</button>
+                {display && <HookMouse />}
+            </div>
+        )
+        }
+        export default MouseContainer
+
+
+

@@ -1,0 +1,28 @@
+Forms
+    - Vital for business application
+    - Create experiece that user effiietly and effictively through the workflow
+For Developers
+    - Hadles form data
+    - validation
+    - Visual feedback with error messages
+    - form submission
+Formik
+    - What?
+        - Formik is a small library that helps you deal with forms in React
+    - Why?
+        - Managing form data
+        - Form submission
+        - Form validation and displaying error messages.
+    - Formik helps us deal with forms in a scalable , performant and easy way.
+
+Course Structure
+    - Build a simple form
+    - useFormik Hook
+    - Manage the form state
+    - Handle form submission
+    - Form validation
+    - Formik Components
+    - Few Handy features
+    - Reusable components for input, text area, select, radio buttons and checkboxes
+    - Build a user registration form.
+
