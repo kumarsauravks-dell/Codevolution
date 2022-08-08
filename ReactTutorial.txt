@@ -2074,10 +2074,443 @@ Ans.
         - useReducer(reducer,initialState)
         - newState=reducer(cuurentState,action)
         - useReducer returns a pair of values - [newState,dispatch]
+Q34. Create a component ReducerFunc to show the example of reduce function in javascript. Just take an array of 5 elements and add them using reduce fuction.
+Sol.
+    - ReducerFunc.js
+        import React, { useEffect } from 'react'
+        function ReducerFunc() {
+            useEffect(()=>{
+                const arr=[1,2,3,4]
+                const reducer=(accumalator,currentValue)=>
+                accumalator+currentValue
+            console.log(arr.reduce(reducer))
+            console.log(arr.reduce(reducer,10))
+            },[]);
+        return (
+            <div>
+                <h2>Reducer Example in console</h2>
+            </div>
+        )
+        }
+        export default ReducerFunc
 
+----------------------------------------------------------------------------
+#62 - useReducer (simple state and action)
+Q35. Create a CounterOne Component having three buttons for increment,decrement and reset . With the help of useReducer change the action for different dispatch of the buttons.
+Ans.
+    - CounterOne.js
+        import React, { useReducer } from 'react'
+        const initialState=0;
+        const reducer=(state,action)=>{
+            switch(action){
+                case 'increment' :
+                    return state+1
+                case 'decrement' :
+                    return state-1;
+                case 'reset':
+                    return initialState;
+                default:
+                    return state
+            }
+        }
+        function CounterOne() {
+            const [count,dispatch]= useReducer(reducer,initialState)
+        return (
+            <div>
+                <h2>Count - {count}</h2>
+                <button onClick={()=>dispatch('increment')}>Increment</button>
+                <button onClick={()=>dispatch('decrement')}>Decrement</button>
+                <button onClick={()=>dispatch('reset')}>Reset</button>
+            </div>
+        )
+        }
+        export default CounterOne
+----------------------------------------------------------
+#63 - useReducer(complex state and action)
+Q36. Create a component CounterTwo in which there are two counters , first counter having an initial value of 0 whereas second has 10,use useReducer with which first counter the value will incremented to 1 and for second to 5.
+Ans.
+    - CounterTwo.js
+        import React, { useReducer } from 'react'
+        const initialState={
+            firstCounter:0,
+            secondCounter:10
+        };
+        const reducer=(state,action)=>{
+            switch(action.type){
+                case 'increment' :
+                    return {...state,firstCounter:state.firstCounter+action.value};
+                case 'decrement' :
+                    return {...state,firstCounter:state.firstCounter-action.value};
+                case 'increment2' :
+                    return {...state,secondCounter:state.secondCounter+action.value};
+                case 'decrement2' :
+                    return {...state,secondCounter:state.secondCounter-action.value};
+                case 'reset' :
+                    return {...state,firstCounter:initialState.firstCounter} 
+                case 'reset2' :
+                    return {...state,secondCounter:initialState.secondCounter} 
+                default:
+                    return state
+            }
+        }
+        function CounterTwo() {
+            const [count,dispatch]=useReducer(reducer,initialState);
+        return (
+            <div>
+                <h2>First Count : {count.firstCounter}</h2>
+                <button onClick={()=>dispatch({type:'increment',value:1})}>Increment</button>
+                <button onClick={()=>dispatch({type:'decrement',value:1})}>Decrement</button>
+                <button onClick={()=>dispatch({type:'reset'})}>Reset</button>
+                <h2>Second Count : {count.secondCounter}</h2>
+                <button onClick={()=>dispatch({type:'increment2',value:5})}>Increment 5</button>
+                <button onClick={()=>dispatch({type:'decrement2',value:5})}>Decrement 5</button>
+                <button onClick={()=>dispatch({type:'reset2'})}>Reset</button>
+            </div>
+        )
+        }
 
+        export default CounterTwo
+----------------------------------------------------------
+#64 - Multiple useReducer
+- When we need multiple state variables for same state transition then we can achieve it easily by multiple useReducer.
 
+Q37. Create a component CounterThree where we need two counters but by using same reducer.
+Ans.
+    - CounterThree.js
+        import React, { useReducer } from 'react'
+        const initialState=0;
+        const reducer=(state,action)=>{
+            switch(action){
+                case 'increment':
+                    return state+1;
+                case 'decrement':
+                    return state-1;
+                case 'reset':
+                    return initialState;
+                default:
+                    return state
+            }
+        }
+        function CounterThree() {
+            const [count,dispatch]=useReducer(reducer,initialState)
+            const [countOne,dispatchOne]=useReducer(reducer,initialState)
+        return (
+            <div>
+                <h2>Counter 1 : {count}</h2>
+                <button onClick={()=>dispatch('increment')}>Increment</button>
+                <button onClick={()=>dispatch('decrement')}>Decrement</button>
+                <button onClick={()=>dispatch('reset')}>Reset</button>
 
+                <h2>Counter 2 : {countOne}</h2>
+                <button onClick={()=>dispatchOne('increment')}>Increment</button>
+                <button onClick={()=>dispatchOne('decrement')}>Decrement</button>
+                <button onClick={()=>dispatchOne('reset')}>Reset</button>
+            </div>
+        )
+        }
+        export default CounterThree
+----------------------------------------------------------
+#65 - useReducer with useContext
+- useReducer with useContext
+    - Generally we use useReducer for local state management
+    - To share state between component - Global state management.
+    - In this case we use -> useReducer+useContext
+Q38. Create 5 component CompA,CompB,CompC,CompD,CompE,CompF and nest it accordingly , define a counter state at app.js and change it through different level of component through the three buttons for increment decrement and reset.
+Ans.
+    - App.js
+        import React, { useReducer } from 'react';
+        import './App.css';
+
+        export const counterContext=React.createContext();
+        const initialState=0;
+        const reducer=(state,action)=>{
+        switch(action){
+            case "increment":
+            return state+1;
+            case "decrement":
+            return state-1;
+            case "reset":
+            return initialState;
+            default:
+            return state;
+        }
+        }
+        function App() { 
+        const [count,dispatch]=useReducer(reducer,initialState);
+        return (
+            <div className="App">
+            <counterContext.Provider value={{CountState:count,CountDispatch:dispatch}} >
+                <h2>Counter : {count}</h2>
+                <CompA />
+                <CompB />
+                <CompC />
+            </counterContext.Provider>
+            </div>
+        );
+        }
+        export default App;
+    - CompA.js
+        import React, { useContext } from 'react'
+        import { counterContext } from '../App'
+
+        function CompA() {
+            const countContext =useContext(counterContext);
+        return (
+            <div>
+                CompA - {countContext.CountState}
+                <button onClick={()=>countContext.CountDispatch('increment')}>Increment</button>
+                <button onClick={()=>countContext.CountDispatch('decrement')}>Decrement</button>
+                <button onClick={()=>countContext.CountDispatch('reset')}>Reset</button>
+            </div>
+            
+        )
+        }
+        export default CompA
+    - CompB.js
+        import React from 'react'
+        import CompD from './CompD'
+        function CompB() {
+        return (
+            <div>
+                <CompD />
+            </div>
+        )
+        }
+        export default CompB
+    - CompC.js
+        import React from 'react'
+        import CompE from './CompE'
+        function CompC() {
+        return (
+            <div>
+                <CompE />
+            </div>
+        )
+        }
+        export default CompC
+    - CompD.js
+        import React, { useContext } from 'react'
+        import { counterContext } from '../App'
+        function CompD() {
+            const countContext=useContext(counterContext)
+        return (
+            <div>
+                CompD - {countContext.CountState}
+                <button onClick={()=>countContext.CountDispatch('increment')}>Increment</button>
+                <button onClick={()=>countContext.CountDispatch('decrement')}>Decrement</button>
+                <button onClick={()=>countContext.CountDispatch('reset')}>Reset</button>
+            </div>
+        )
+        }
+        export default CompD
+    - CompE.js
+        import React from 'react'
+        import CompF from './CompF'
+        function CompE() {
+        return (
+            <div>
+                <CompF />
+            </div>
+        )
+        }
+        export default CompE
+    - CompF.js
+        import React, { useContext } from 'react'
+        import { counterContext } from '../App'
+        function CompF() {
+            const countContext=useContext(counterContext);
+        return (
+            <div>
+                CompF - {countContext.CountState}
+                <button onClick={()=>countContext.CountDispatch('increment')}>Increment</button>
+                <button onClick={()=>countContext.CountDispatch('decrement')}>Decrement</button>
+                <button onClick={()=>countContext.CountDispatch('reset')}>Reset</button>
+            </div>
+        )
+        }
+        export default CompF
+
+----------------------------------------------------------
+#66. Fetching data using useReducer
+- Data can be fetched in useEffect as the state changes after fetching from server.
+
+Q39. Create a component DataFetching1 where with the help of useEffect and useState fetch the post with id from jsonplaceholder website.At first it should be in loading state then if the post is fetched it should be displayed else if some error occured error message should be displayed.
+Ans.
+    - DataFetching1.js
+        import React, { useEffect, useState } from 'react'
+        import axios from 'axios'        
+        function DataFetching1() {
+            const [loading,setLoading]=useState(true);
+            const [error,setError]=useState('');
+            const [post,setPost]=useState({})
+        
+        useEffect(()=>{
+            axios.get('https://jsonplaceholder.typicode.com/posts/1')
+            .then(response=>{
+                setLoading(false)
+                setPost(response.data)
+                setError('')
+            })
+            .catch(error=>{
+                setLoading(false)
+                setPost({})
+                setError("Something Went wrong")
+            })
+        })
+            return (
+            <div>
+                {loading?'Loading':post.title}
+                {error?error:null}
+            </div>
+        )
+        }
+        export default DataFetching1
+-----------------------------------------------------------
+#67 - Fetching data with useReducer
+Q40. Create a component DataFetching2 which fetch the post from jsonplaceholder with the help of useReducer and useEffect.
+Ans.
+    - DataFetching2.js
+        import React, { useEffect, useReducer } from 'react'
+        import axios from 'axios';
+        const initialState={
+            loading:true,
+            error:'',
+            post:{}
+        };
+        const reducer=(state,action)=>{
+            switch(action.type){
+                case 'FETCH_SUCCESS':
+                    return{
+                        loading:false,
+                        post:action.payload,
+                        error:''
+                    }
+                case "FETCH_ERROR":
+                    return{
+                        loading:false,
+                        post:{},
+                        error:"Something Went Wrong"
+                    }
+                default:
+                    return state
+            }
+        }
+        function DataFetching2() {
+            const [state,dispatch]=useReducer(reducer,initialState)
+            useEffect(()=>{
+                axios.get('https://jsonplaceholder.typicode.com/posts/1')
+                .then(response=>{
+                    dispatch({type:'FETCH_SUCCESS',payload:response.data})
+                })
+                .catch(error=>{
+                    dispatch({type:'FETCH_ERROR'})
+                })
+            })
+        return (
+            <div>
+                {state.loading?'Loading':state.post.title}
+                {state.error?state.error:null}
+            </div>
+        )
+        }
+        export default DataFetching2
+
+------------------------------------------------------------------
+#68 - useState vs useReducer
+- Different Scenario for comparison of useState vs useReducer
+    - Type of state
+        - useState - number,string,boolean
+        - useReducer - object or Array
+    - Number of state transition
+        - useState - one or two
+        - useReducer - too many 
+    - Related state transition?
+        - useState - no
+        - useReducer - yes 
+    - Business logic 
+        - useState - no Business logic
+        - useReducer - complex Business logic
+    - Local vs Global State
+        - useState - Local
+        - useReducer - Global
+-------------------------------------------------------------
+Skipped Videos #69 - useCallback hook, #70 - useMemo hook
+-------------------------------------------------------------
+#71 - useRef hook 
+- used to access directly dom nodes through functional components.
+
+Q41. Create a component FocusInput and as soon as the page loads the focus should be there on the textbox in it.
+Ans.
+    - FocusInput.js
+        import React, { useEffect, useRef } from 'react'
+        function FocusInput() {
+            const inputRef=useRef(null);
+            useEffect(()=>{
+                //focus on input element
+                inputRef.current.focus();
+            },[])
+        return (
+            <div>
+                <input ref={inputRef} type="text"></input>
+            </div>
+        )
+        }
+        export default FocusInput
+---------------------------------------------------------
+#72 - useRef hook - another use case
+Q42. Create two components ClassTimer and HookTimer . Create a timer that ticks every after one second and a button to stop the timer . Show how useRef is used to do stop timer in fuctional component.
+Ans.
+    - ClassTimer.js
+        import React, { Component } from 'react'
+        class ClassTimer extends Component {
+            interval
+            constructor(props) {
+            super(props)            
+            this.state = {
+                timer:0
+            }
+            }
+            componentDidMount(){
+                this.interval=setInterval(()=>{
+                    this.setState(prevState=>({
+                        timer:prevState.timer+1
+                    }))
+                },1000)
+            }
+            componentWillUnmount(){
+                clearInterval(this.interval)
+            }
+        render() {
+            return (
+            <div>
+                Class Timer - {this.state.timer}
+                <button onClick={()=>clearInterval(this.interval)}>Clear Timer</button>
+            </div>
+            )
+        }
+        }
+        export default ClassTimer
+    - HookTimer.js
+        import React, { useEffect, useRef, useState } from 'react'
+        function HookTimer() {
+            const [timer,setTimer]=useState(0)
+            const intervalRef=useRef()
+            useEffect(()=>{
+                intervalRef.current=setInterval(()=>{
+                    setTimer(prevTimer=>prevTimer+1)
+                },1000)
+                return()=>{
+                    clearInterval(intervalRef.current)
+                }
+            },[])
+        return (
+            <div>HookTimer - {timer}
+            <button onClick={()=>clearInterval(intervalRef.current)}>Clear Hook Timer</button>
+            </div>
+        )
+        }
+        export default HookTimer
+----------------------------------------------------------
 
 
 
